@@ -1,8 +1,9 @@
 # 使用官方Python镜像替代GitHub Container Registry
-FROM python:3.10-slim-bookworm
+FROM python:3.10-slim  
+# 替换原来的 python:3.10-slim-bookworm
 
 # 安装uv包管理器
-RUN pip install -i https://mirrors.aliyun.com/pypi/simple uv
+RUN pip install uv
 
 WORKDIR /app
 
@@ -35,17 +36,7 @@ RUN echo '#!/bin/bash\nXvfb :99 -screen 0 1024x768x24 -ac +extension GLX &\nexpo
 
 COPY requirements.txt .
 
-#多源轮询安装依赖
-RUN set -e; \
-    for src in \
-        https://mirrors.aliyun.com/pypi/simple \
-        https://pypi.tuna.tsinghua.edu.cn/simple \
-        https://pypi.doubanio.com/simple \
-        https://pypi.org/simple; do \
-      echo "Try installing from $src"; \
-      pip install --no-cache-dir -r requirements.txt -i $src && break; \
-      echo "Failed at $src, try next"; \
-    done
+RUN pip install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
 
 # 复制日志配置文件
 COPY config/ ./config/
